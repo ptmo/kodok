@@ -354,15 +354,12 @@
   position: relative;
   z-index: 1;
 }
-
-/* Hero text muncul soft dari kiri */
 .hero-copy {
   opacity: 0;
   transform: translate3d(-18px, 0, 0);
   animation: heroCopyReveal 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.32s forwards;
 }
 
-/* Hero visual/video muncul soft dari kanan */
 .hero-visual {
   opacity: 0;
   transform: translate3d(18px, 0, 0) scale(0.975);
@@ -595,15 +592,11 @@
   }
     }
 
-/* =========================================
-   CARD PAD
-========================================= */
 .card-pad {
   padding: clamp(24px, 3vw, 34px);
   position: relative; 
-  z-index: 2; /* Memastikan teks dan ikon selalu berada di atas efek ambient */
+  z-index: 2;
 }
-
     .card-title {
       margin: 0 0 18px;
       font-size: clamp(24px, 2.3vw, 30px);
@@ -1692,33 +1685,22 @@ a memorable Kodok identity, and a swamp culture that prioritizes quality.
 
     function updateCopyrightTime() {
         const now = new Date();
-        
-        // Nama Hari dan Bulan dalam bahasa Inggris
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
         const dayName = days[now.getDay()];
         const date = now.getDate();
         const monthName = months[now.getMonth()];
         const year = now.getFullYear();
-
-        // Format waktu agar selalu 2 digit (kecuali milidetik 3 digit)
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
         const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
-
-        // Menyusun format: Day Hours:Minutes:Seconds.Milliseconds Date Month Year
         const timeString = `${dayName} ${hours}:${minutes}:${seconds}.${milliseconds} ${date} ${monthName} ${year}`;
 
-        // Mengganti teks di dalam span
         document.getElementById('copyright-text').innerText = `© ${timeString} Kodok. All rights reserved.`;
-        
-        // Memanggil fungsi ini terus-menerus agar milidetiknya update secara real-time
         requestAnimationFrame(updateCopyrightTime);
     }
     
-    // Menjalankan fungsi pertama kali
     updateCopyrightTime();
   </script>
 </body>
