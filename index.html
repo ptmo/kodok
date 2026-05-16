@@ -1431,34 +1431,6 @@
   border-radius: 24px;
 }
     }
-
-    /* Styling untuk pop-up notifikasi (Toast) */
-.copy-toast {
-    visibility: hidden;
-    min-width: 250px;
-    background-color: #4CAF50; /* Warna hijau untuk kesan sukses */
-    color: #fff;
-    text-align: center;
-    border-radius: 12px;
-    padding: 16px;
-    position: fixed;
-    z-index: 1000;
-    left: 50%;
-    bottom: 20px; /* Posisi awal di bawah */
-    transform: translateX(-50%);
-    font-size: 15px;
-    font-weight: bold;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    transition: opacity 0.4s ease, bottom 0.4s ease;
-}
-
-/* Class ini akan ditambahkan oleh JS saat diklik */
-.copy-toast.show {
-    visibility: visible;
-    opacity: 1;
-    bottom: 50px; /* Animasi melayang naik ke atas */
-}
   </style>
 </head>
 
@@ -1512,9 +1484,8 @@
           </div>
 
           <div class="badges">
-            <span class="badge" style="cursor: pointer;" title="Click to copy" onclick="copyAddress('7MUS6vEnTuBNcuGtUt9oXNG8n1751XULHV97mxCVFray')">
-    <i class="fa-solid fa-file-lines"></i> Contract: 
-    <span style="user-select: all;">7MUS6vEnTuBNcuGtUt9oXNG8n1751XULHV97mxCVFray</span>
+            <span class="badge" style="cursor: pointer;" title="Click to copy" onclick="navigator.clipboard.writeText('7MUS6vEnTuBNcuGtUt9oXNG8n1751XULHV97mxCVFray'); alert('Contract Address Copied!');">
+    <i class="fa-solid fa-file-lines"></i> Contract Address: <span style="user-select: all; font-weight: bold;">7MUS6vEnTuBNcuGtUt9oXNG8n1751XULHV97mxCVFray</span>
             </span>
             <span class="badge"><i class="fa-solid fa-rocket"></i> Starting from Launchlab Raydium</span>
           </div>
@@ -1685,10 +1656,6 @@ a memorable Kodok identity, and a swamp culture that prioritizes quality.
     </div>
   </footer>
 
-  <div id="toast" class="copy-toast">
-    <i class="fa-solid fa-circle-check" style="margin-right: 8px;"></i> Contract Address Copied!
-  </div>
-
   <script>
     const menuButton = document.getElementById("mobile-menu-btn");
     const mobileMenu = document.getElementById("mobile-menu");
@@ -1724,22 +1691,6 @@ a memorable Kodok identity, and a swamp culture that prioritizes quality.
   );
 
   cards.forEach((card) => revealObserver.observe(card));
-
-    function copyAddress(caText) {
-        // 1. Menyalin teks ke clipboard perangkat pengguna
-        navigator.clipboard.writeText(caText);
-        
-        // 2. Mengambil elemen toast
-        const toast = document.getElementById("toast");
-        
-        // 3. Menambahkan class 'show' untuk memicu animasi CSS
-        toast.classList.add("show");
-        
-        // 4. Menghapus class 'show' secara otomatis setelah 2.5 detik
-        setTimeout(() => { 
-            toast.classList.remove("show"); 
-        }, 2500);
-    }
 
     function updateCopyrightTime() {
         const now = new Date();
