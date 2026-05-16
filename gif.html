@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Quality MP4 to GIF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: #2d2d2d;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        .btn:hover { background: #45a049; }
+        .btn:disabled { background: #666; cursor: not-allowed; }
+        #status { margin-top: 15px; font-size: 14px; color: #aaa; }
+        #output-container { margin-top: 20px; display: none; }
+        img { max-width: 100%; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2><i class="fa-solid fa-film"></i> MP4 to GIF HQ</h2>
+        <p>Resolusi asli, warna dioptimalkan.</p>
+        
+        <input type="file" id="uploader" accept="video/mp4" style="margin-top: 15px;">
+        <br>
+        <button id="convertBtn" class="btn" onclick="convertFile()" disabled>
+            <i class="fa-solid fa-wand-magic-sparkles" style="margin-right: 8px;"></i> Convert to GIF
+        </button>
+
+        <div id="status">Tunggu, sedang memuat sistem AI/FFmpeg...</div>
+
+        <div id="output-container">
+            <h3><i class="fa-solid fa-check-circle" style="color: #4CAF50;"></i> Selesai!</h3>
+            <img id="output-gif" src="" alt="Result">
+            <br>
+            <a id="download-link" class="btn" style="background: #2196F3; display: inline-block; text-decoration: none;" download="output.gif">
+                <i class="fa-solid fa-download" style="margin-right: 8px;"></i> Download GIF
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const { createFFmpeg, fetchFile } = FFmpeg;
+        const ffmpeg = createFFmpeg({ log: true });
+        
+        const statusEl = document.getElementById('status');
+        const btn = document.getElementById('convertBtn');
+        const uploader = document.getElementById('uploader');
+
+        // Memuat FFmpeg ke memori browser
+        (async function load() {
+            await ffmpeg.load();
+            statusEl.innerText = "Sistem siap! Silakan pilih video.";
+            btn.disabled = false;
+        })();
+
+        async function convertFile() {
+            const files = uploader.files;
+            if (files.length === 0) {
+                alert("Pilih file MP4 dulu ya!");
+                return;
+            }
+
+            const file = files[0];
+            btn.disabled = true;
+            statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sedang memproses... ini mungkin memakan waktu agak lama.';
+
+            // Membaca file ke FFmpeg virtual system
+            ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
+
+            // KOMANDO SAKTI FFMPEG:
+            // 1. fps=10 -> Turunkan frame rate agar ukuran file tidak meledak
+            // 2. split, palettegen, paletteuse -> Bikin GIF tidak blur dan warnanya tajam
+            await ffmpeg.run(
+                '-i', 'input.mp4',
+                '-vf', 'fps=10,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5',
+                '-loop', '0',
+                'output.gif'
+            );
+
+            // Mengambil hasil dari FFmpeg
+            const data = ffmpeg.FS('readFile', 'output.gif');
+            
+            // Membuat URL untuk didownload
+            const gifUrl = URL.createObjectURL(new Blob([data.buffer], { type: 'image/gif' }));
+            
+            // Menampilkan di UI
+            document.getElementById('output-gif').src = gifUrl;
+            document.getElementById('download-link').href = gifUrl;
+            document.getElementById('output-container').style.display = 'block';
+            
+            statusEl.innerText = "Konversi berhasil!";
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
